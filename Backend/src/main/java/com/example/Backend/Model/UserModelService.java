@@ -23,9 +23,9 @@ public class UserModelService implements UserDetailsService {
         Optional<UserModel>user=repository.findByEmail(username);
         if (user.isPresent()) {
 
-            var userObj=user.get();
+            UserModel userObj=user.get();
             return User.builder()
-                    .username(userObj.getName())
+                    .username(userObj.getEmail())
                     .password(userObj.getPassword())
                     .roles(userObj.getRole().toUpperCase())
                     .build();

@@ -1,9 +1,6 @@
 package com.example.Backend.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +14,7 @@ public class UserModel {
     private Long id;
 
     private String name;
+    @Column(unique = true)
     private String email;
     private String password;
     private String role;
