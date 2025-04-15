@@ -74,7 +74,7 @@ const Authentication = () => {
           <div className="row">
             {/* Left Side - Image */}
             <div className="col-12 col-md-6 bsb-tpl-bg-platinum">
-              <div className="flex-grow-1 d-flex align-items-center justify-content-center">
+                  <div className="flex-grow-1 d-flex align-items-center justify-content-center">
                     <img  style={{ 
                         width: '660px',
                         height: '690px',

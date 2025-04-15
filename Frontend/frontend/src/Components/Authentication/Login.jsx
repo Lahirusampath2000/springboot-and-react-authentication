@@ -1,24 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
-const loadExternalCSS = (href) => {
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = href;
-  document.head.appendChild(link);
-};
-
-const Authentication = () => {
+const Login = ({ handleLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  React.useEffect(() => {
-    loadExternalCSS("https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css");
-    loadExternalCSS("https://unpkg.com/bs-brain@2.0.4/components/registrations/registration-3/assets/css/registration-3.css");
-  }, []);
-
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch("http://localhost:8080/req/login", {
@@ -28,34 +16,43 @@ const Authentication = () => {
         },
         body: JSON.stringify({ email, password }),
       });
-  
-      const message = await response.text(); // ← not .json() anymore
-  
+
+      const message = await response.text();
+
       if (!response.ok) {
         throw new Error(message || "Login failed");
       }
-  
-      alert(message); // or toast(message);
+
+      alert(message);
+      handleLogin();
       navigate("/");
-  
+
     } catch (error) {
       alert(error.message);
     }
   };
-  
-  
 
   return (
     <div className="authentication-container">
       <section className="p-3 p-md-4 p-xl-5">
         <div className="container">
           <div className="row">
-            {/* Left Side Image */}
             <div className="col-12 col-md-6 bsb-tpl-bg-platinum">
-              {/* ... existing image code ... */}
+                <div className="flex-grow-1 d-flex align-items-center justify-content-center">
+                    <img  style={{ 
+                        width: '660px',
+                        height: '690px',
+                        objectFit: 'cover',
+                        display: 'block'
+                        }}
+                        loading="lazy"
+                        src="/images/auth image.jpg"
+                        
+                        />
+                
+                </div>
             </div>
 
-            {/* Right Side Form */}
             <div className="col-12 col-md-6 bsb-tpl-bg-lotion">
               <div className="p-3 p-md-4 p-xl-5">
                 <div className="mb-5">
@@ -63,7 +60,7 @@ const Authentication = () => {
                   <h3 className="fs-6 fw-normal text-secondary m-0">Enter your details to Login</h3>
                 </div>
 
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleSubmit}>
                   <div className="row gy-3 gy-md-4 overflow-hidden">
                     <div className="col-12">
                       <label htmlFor="email" className="form-label">Email <span className="text-danger">*</span></label>
@@ -98,7 +95,10 @@ const Authentication = () => {
 
                 <hr className="mt-5 mb-4 border-secondary-subtle" />
                 <p className="m-0 text-secondary text-end">
-                  Don't have an Account? <a href="/signup" className="link-primary text-decoration-none">Sign up</a>
+                  Don't have an Account?{" "}
+                  <Link to="/signup" className="link-primary text-decoration-none">
+                    Sign up
+                  </Link>
                 </p>
               </div>
             </div>
@@ -109,4 +109,4 @@ const Authentication = () => {
   );
 };
 
-export default Authentication;
+export default Login;
