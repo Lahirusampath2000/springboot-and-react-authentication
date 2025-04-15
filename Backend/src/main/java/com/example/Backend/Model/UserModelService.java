@@ -27,6 +27,7 @@ public class UserModelService implements UserDetailsService {
             return User.builder()
                     .username(userObj.getName())
                     .password(userObj.getPassword())
+                    .roles(userObj.getRole().toUpperCase())
                     .build();
         }else {
             throw new UsernameNotFoundException(username);
