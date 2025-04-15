@@ -13,6 +13,7 @@ const Authentication = () => {
     name: '',
     email: '',
     password: '',
+    role: 'user',
     agreed: false
   });
 
@@ -38,7 +39,8 @@ const Authentication = () => {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          password: formData.password
+          password: formData.password,
+          role: formData.role,
         }),
       });
 
@@ -133,6 +135,20 @@ const Authentication = () => {
                         onChange={handleChange}
                       />
                     </div>
+                    <div className="col-12">
+                      <label htmlFor="role" className="form-label">Role <span className="text-danger">*</span></label>
+                      <select 
+                        className="form-select" 
+                        id="role" 
+                        required 
+                        value={formData.role}
+                        onChange={handleChange}
+                      >
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </div>
+
                     <div className="col-12">
                       <div className="form-check">
                         <input 
