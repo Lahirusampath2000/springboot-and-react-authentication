@@ -43,15 +43,18 @@ const Authentication = () => {
           role: formData.role,
         }),
       });
-
+      const responseData = await response.json();
       if (response.ok) {
-        const data = await response.json();
+        
         alert('Registration successful!');
         // You can redirect to login page here
          window.location.href = '/login';
       } else {
-        const errorData = await response.json();
-        alert(`Registration failed: ${errorData.message || 'Unknown error'}`);
+        if (response.status === 409) {
+          alert(`Registration failed: ${responseData.message}`);
+      } else {
+          alert(`Registration failed: ${responseData.message || 'Unknown error'}`);
+      }
       }
     } catch (error) {
       console.error('Error:', error);
