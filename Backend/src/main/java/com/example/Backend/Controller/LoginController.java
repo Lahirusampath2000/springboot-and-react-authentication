@@ -64,4 +64,16 @@ public class LoginController {
         }
         return ResponseEntity.ok().body("Logged out successfully");
     }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<?> checkLoginStatus() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()
+                && !authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.ok().body("Authenticated");
+        } else {
+            return ResponseEntity.status(401).body("Not authenticated");
+        }
+    }
 }
