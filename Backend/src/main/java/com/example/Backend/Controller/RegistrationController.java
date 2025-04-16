@@ -22,7 +22,7 @@ public class RegistrationController {
 
     @PostMapping(value = "/req/signup", consumes = "application/json")
     public ResponseEntity<?> registerUser(@RequestBody UserModel userModel) {
-        // Validate email 
+        // Validate email
         if (userModel.getEmail() == null || userModel.getEmail().isEmpty()) {
             return ResponseEntity.badRequest()
                     .body(Collections.singletonMap("message", "Email is required"));

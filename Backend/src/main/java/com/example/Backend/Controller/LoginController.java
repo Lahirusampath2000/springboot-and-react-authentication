@@ -1,39 +1,60 @@
 package com.example.Backend.Controller;
 
 import com.example.Backend.Model.LoginModel;
-import com.example.Backend.Model.UserModel;
-import com.example.Backend.Model.UserModelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/req")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class LoginController {
 
-    @Autowired
-    private UserModelRepository userRepository;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public LoginController(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginModel loginRequest) {
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginModel loginRequest,
+                                              HttpServletRequest request) {
         try {
-            UserModel user = userRepository.findByEmail(loginRequest.getEmail())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+            // Authenticate user
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail().trim(),
+                            loginRequest.getPassword()
+                    )
+            );
 
-            if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                return ResponseEntity.badRequest().body("Wrong password");
-            }
+            // Create new security context
+            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+            securityContext.setAuthentication(authentication);
 
-            // ✅ No JWT - just success message
-            return ResponseEntity.ok("Login successful");
+            // Create or get existing session
+            HttpSession session = request.getSession(true);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            // Set session timeout (1 hour = 3600 seconds)
+            session.setMaxInactiveInterval(3600);
+
+            return ResponseEntity.ok()
+                    .body("Login successful");
+
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.badRequest()
+                    .body("Invalid email or password");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body("Login error: " + e.getMessage());
         }
     }
 }
