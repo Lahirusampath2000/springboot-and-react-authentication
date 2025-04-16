@@ -43,18 +43,25 @@ public class LoginController {
             HttpSession session = request.getSession(true);
             session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 
-            // Set session timeout (1 hour = 3600 seconds)
+            // Set session timeout (1 hour)
             session.setMaxInactiveInterval(3600);
 
-            return ResponseEntity.ok()
-                    .body("Login successful");
+            return ResponseEntity.ok().body("Login successful");
 
         } catch (BadCredentialsException e) {
-            return ResponseEntity.badRequest()
-                    .body("Invalid email or password");
+            return ResponseEntity.badRequest().body("Invalid credentials");
         } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body("Login error: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Login error: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(HttpServletRequest request) {
+        SecurityContextHolder.clearContext();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return ResponseEntity.ok().body("Logged out successfully");
     }
 }
